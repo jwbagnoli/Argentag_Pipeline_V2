@@ -1,0 +1,42 @@
+name: at2pb_isoseq
+channels:
+  - conda-forge
+  - bioconda
+  - anaconda
+  - defaults
+dependencies:
+  # Python (compatible versions)
+  - python>=3.10,<3.13
+  
+  # Core bioinformatics tools
+  - samtools>=1.20
+  - htslib>=1.20
+  
+  # Python packages for bioinformatics
+  - pysam>=0.20
+  - dnaio>=1.2
+  - xopen>=2.0
+  - cutadapt>=5.0
+  - python-isal>=1.1
+  
+  # Scientific computing
+  - numpy>=1.24
+  - matplotlib>=3.8
+  
+  # Additional packages
+  - pandas
+  - scipy
+  - biopython
+  
+  # Development tools
+  - pip
+  
+  # Optional packages
+  - jupyter
+  - seaborn
+  
+  # Uncomment if you need PacBio tools
+  # - isoseq3
+  
+  - pip:
+    # Any pip-specific packages
