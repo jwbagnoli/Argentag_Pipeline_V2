@@ -48,9 +48,9 @@ elif [[ ${End_stage}  == "stats" ]] ; then
     End_ID=2
 elif [[ ${End_stage}  == "mapping" ]] ; then
     End_ID=3
-elif [[ ${Start_stage}  == "filtering" ]] ; then
+elif [[ ${End_stage}  == "filtering" ]] ; then
     End_ID=4
-elif [[ ${Start_stage}  == "bambu" ]] ; then
+elif [[ ${End_stage}  == "bambu" ]] ; then
     End_ID=5
 fi
 
