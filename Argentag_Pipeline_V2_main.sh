@@ -70,7 +70,7 @@ fi
 ## Preprocessing
 #create main output folder if it didn't exist
 
-if [[ ${Start_ID} == 1]] ; then
+if [[ ${Start_ID} == 1 ]] ; then
   if [[ ! -d ${outdir} ]] ; then
     mkdir -p ${outdir}
     if [ $? -ne 0 ] ; then
