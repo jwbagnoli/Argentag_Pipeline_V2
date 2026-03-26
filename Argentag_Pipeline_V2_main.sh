@@ -7,25 +7,40 @@
 # Params
 yaml=$1
 
+#sampleinfo:
 sample=$(grep 'sample:' ${yaml} | awk '{print $2}')
 fastq_path=$(grep 'fastq_path' ${yaml} | awk '{print $2}')
-nthreads=$(grep 'nthreads' ${yaml} | awk '{print $2}')
+
+#general:
 outdir=$(grep 'outdir' ${yaml} | awk '{print $2}')
+nthreads=$(grep 'nthreads' ${yaml} | awk '{print $2}')
+Start_stage=$(grep 'Start_stage' ${yaml} | awk '{print $2}')
+End_stage=$(grep 'End_stage' ${yaml} | awk '{print $2}')
+
+#taggy:
 preset=$(grep 'preset' ${yaml} | awk '{print $2}')
+taggy_params=$(grep 'taggy_params' ${yaml} | awk '{print $2}')
+keep_demux=$(grep 'keep_demux' ${yaml} | awk '{print $2}')
+
+#filtering:
+Cellselection=$(grep 'Cellselection' ${yaml} | awk '{print $2}')
+ncells=$(grep 'ncells:' ${yaml} | awk '{print $2}')
+keep_temp_stats=$(grep 'keep_temp_stats' ${yaml} | awk '{print $2}')
+
+#reference:
+genome_name=$(grep 'genome_name' ${yaml} | awk '{print $2}')
 genome_path=$(grep 'genome_path' ${yaml} | awk '{print $2}')
 gtf_path=$(grep 'gtf_path' ${yaml} | awk '{print $2}')
 bed_path=$(grep 'bed_path' ${yaml} | awk '{print $2}')
-genome_name=$(grep 'genome_name' ${yaml} | awk '{print $2}')
 splice_size=$(grep 'splice_size:' ${yaml} | awk '{print $2}')
-Cellselection=$(grep 'Cellselection' ${yaml} | awk '{print $2}')
-ncells=$(grep 'ncells:' ${yaml} | awk '{print $2}')
+
+#tools
 Rscript=$(grep 'Rscript' ${yaml} | awk '{print $2}')
 ArgenTAG_pipeline=$(grep 'ArgenTAG_pipeline' ${yaml} | awk '{print $2}')
 samtoolsexc=$(grep 'samtoolsexc' ${yaml} | awk '{print $2}')
 minimap2_exc=$(grep 'minimap2_exc' ${yaml} | awk '{print $2}')
-Start_stage=$(grep 'Start_stage' ${yaml} | awk '{print $2}')
-End_stage=$(grep 'End_stage' ${yaml} | awk '{print $2}')
-keep_demux=$(grep 'keep_demux' ${yaml} | awk '{print $2}')
+
+
 
 ## Encoding stages
 
@@ -93,8 +108,16 @@ if [[ ${Start_ID} == 1 ]] ; then
   echo "Running taggy_demux"
   mkdir ${outdir}/taggy_demux
   cd ${ArgenTAG_pipeline}/taggy_demux_3.2.3/taggy_demux-main/
-  bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/ -s ${outdir}/${sample}.fastq --presets=${preset}
-  
+  if [[ ${preset} == "none" && ${taggy_params} == "none" ]] ; then
+    bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/ -s ${outdir}/${sample}.fastq 
+  elif [[ ${preset} != "none" && ${taggy_params} == "none" ]] ; then
+    bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/ -s ${outdir}/${sample}.fastq --presets=${preset}
+  elif [[ ${preset} == "none" && ${taggy_params} != "none" ]] ; then
+    bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/ -s ${outdir}/${sample}.fastq ${taggy_params}
+  else
+    bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/ -s ${outdir}/${sample}.fastq --presets=${preset} ${taggy_params}
+  fi
+
   rm ${outdir}/${sample}.fastq
   pigz ${outdir}/taggy_demux/fastq/*fastq
   cat ${outdir}/taggy_demux/fastq/*fastq.gz  > ${outdir}/taggy_demux/fastq/${sample}.taggydemux.fastq.gz
@@ -105,11 +128,17 @@ fi
 if [[ ${Start_ID} < 3 && ${End_ID} > 1 ]] ; then
   echo "Running Cell Selection"
   ${Rscript} ${ArgenTAG_pipeline}/SCRIPTS/Stats_v2.R ${yaml}
-  rm -r ${outdir}/Filtering/Stats_tmp
+  
+  if [[ ${keep_temp_stats} == FALSE ]] ; then
+    rm -r ${outdir}/Filtering/Stats_tmpe
+  fi
+  
   if [[ ${keep_demux} == FALSE ]] ; then
     find ${outdir}/taggy_demux/fastq/ -type f -name "[0-9][0-9][0-9][0-9].fastq.gz" -delete
   fi
 fi
+
+
 # Mapping
 if [[ ${Start_ID} < 4 && ${End_ID} > 2 ]] ; then
   echo "Running Mapping"
