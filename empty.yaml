@@ -1,0 +1,30 @@
+---
+sampleinfo:
+  sample: 
+  input_path: 
+general:
+  outdir: 
+  nthreads: 15
+  nchunks: 15
+  Start_stage: stats #taggy, stats,  mapping, filtering, bambu
+  End_stage: bambu #taggy, stats,  mapping, filtering, bambu
+taggy:
+  taggy_split: 1
+  preset: ont+v1
+  keep_demux: TRUE
+filtering:
+  Cellselection: both #auto, both or ncells
+  ncells: 20000
+  minreadlength: 400
+reference:
+  genome_name: 
+  genome_path: 
+  gtf_path: 
+  bed_path: 
+  splice_size: 
+tools:
+  Rscript: /usr/bin/Rscript
+  ArgenTAG_pipeline: /home/TALMAN/Tools/Argentag_Pipeline_V2
+  samtoolsexc: /home/TALMAN/Tools/samtools-1.23/samtools
+  minimap2_exc: minimap2
+---

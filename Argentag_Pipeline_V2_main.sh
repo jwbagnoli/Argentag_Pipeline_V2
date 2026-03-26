@@ -9,7 +9,7 @@ yaml=$1
 
 #sampleinfo:
 sample=$(grep 'sample:' ${yaml} | awk '{print $2}')
-fastq_path=$(grep 'fastq_path' ${yaml} | awk '{print $2}')
+input_path=$(grep 'input_path' ${yaml} | awk '{print $2}')
 
 #general:
 outdir=$(grep 'outdir' ${yaml} | awk '{print $2}')
@@ -18,6 +18,7 @@ Start_stage=$(grep 'Start_stage' ${yaml} | awk '{print $2}')
 End_stage=$(grep 'End_stage' ${yaml} | awk '{print $2}')
 
 #taggy:
+taggy_split=$(grep 'taggy_split:' ${yaml} | awk '{print $2}')
 preset=$(grep 'preset' ${yaml} | awk '{print $2}')
 taggy_params=$(grep 'taggy_params' ${yaml} | awk '{$1=""; print $0}')
 keep_demux=$(grep 'keep_demux' ${yaml} | awk '{print $2}')
@@ -39,6 +40,7 @@ Rscript=$(grep 'Rscript' ${yaml} | awk '{print $2}')
 ArgenTAG_pipeline=$(grep 'ArgenTAG_pipeline' ${yaml} | awk '{print $2}')
 samtoolsexc=$(grep 'samtoolsexc' ${yaml} | awk '{print $2}')
 minimap2_exc=$(grep 'minimap2_exc' ${yaml} | awk '{print $2}')
+
 
 ## Encoding stages
 
@@ -69,7 +71,7 @@ fi
 
 ## Checks
 ### Check if input file is fastq or fastq.gz, if not exit
-if [[ ${fastq_path} != *fastq.gz && ${fastq_path} != *.fastq ]] ; then
+if [[ ${input_path} != *fastq.gz && ${input_path} != *.fastq ]] ; then
       echo "Please provide a fastq or fastq.gz input file."
       exit 1
 fi
@@ -81,9 +83,9 @@ fi
 
 
 ## Preprocessing
-#create main output folder if it didn't exist
-
 if [[ ${Start_ID} == 1 ]] ; then
+  
+  #create main output folder if it didn't exist
   if [[ ! -d ${outdir} ]] ; then
     mkdir -p ${outdir}
     if [ $? -ne 0 ] ; then
@@ -91,36 +93,58 @@ if [[ ${Start_ID} == 1 ]] ; then
         exit 1
     fi
   fi
-
+  cd ${outdir}
   ## Unzip input fastq if ends in .gz
-  if [[ ${fastq_path} == *.gz ]] ; then
+  if [[ ${input_path} == *.gz ]] ; then
     echo "unzipping input file"
-    gzip -dkc ${fastq_path} > ${outdir}/${sample}.fastq
-  else
+    gzip -dkc ${input_path} > ${outdir}/${sample}.fastq
+  elif [[ ${input_path} == *.gz ]] ; then
     echo "copying input file"
-    cp ${fastq_path}  ${outdir}/${sample}.fastq
+    cp ${input_path}  ${outdir}/${sample}.fastq
+  elif [[ ${input_path} == *.bam ]] ; then
+    echo "Converting input file"
+    ${samtoolsexc} fastq -@ ${nthreads} ${input_path} > ${outdir}/${sample}.fastq
   fi
   
   
   # Running taggy demux
   echo "Running taggy_demux"
   mkdir ${outdir}/taggy_demux
-  cd ${ArgenTAG_pipeline}/taggy_demux_3.2.3/taggy_demux-main/
-  if [[ ${preset} == "none" && ${taggy_params} == "none" ]] ; then
-    bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/ -s ${outdir}/${sample}.fastq 
-  elif [[ ${preset} != "none" && ${taggy_params} == "none" ]] ; then
-    bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/ -s ${outdir}/${sample}.fastq --presets=${preset}
-  elif [[ ${preset} == "none" && ${taggy_params} != "none" ]] ; then
-    bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/ -s ${outdir}/${sample}.fastq ${taggy_params}
+  if [[ ${taggy_split} > 1 ]] ; then
+    mkdir ${outdir}/taggy_demux/split
+    seqkit split2 ${outdir}/${sample}.fastq  -p ${taggy_split} -f -O ${outdir}/taggy_demux/split
+    for (( i=1; i<=$taggy_split; i++ )); do mkdir ${outdir}/taggy_demux/split/taggy_demux_${i}  ; done
+    cd ${ArgenTAG_pipeline}/taggy_demux_3.2.3/taggy_demux-main/
+    if [[ ${preset} == "none" && ${taggy_params} == "none" ]] ; then
+      for (( i=1; i<=$taggy_split; i++ )); do bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/split/taggy_demux_${i} -s ${outdir}/taggy_demux/split/${sample}.part_00${i}.fastq ; done
+    elif [[ ${preset} != "none" && ${taggy_params} == "none" ]] ; then
+      for (( i=1; i<=$taggy_split; i++ )); do bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/split/taggy_demux_${i}  -s ${outdir}/taggy_demux/split/${sample}.part_00${i}.fastq --presets=${preset} ; done
+    elif [[ ${preset} == "none" && ${taggy_params} != "none" ]] ; then
+      for (( i=1; i<=$taggy_split; i++ )); do bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/split/taggy_demux_${i}  -s ${outdir}/taggy_demux/split/${sample}.part_00${i}.fastq ${taggy_params} ; done
+    else
+      for (( i=1; i<=$taggy_split; i++ )); do bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/split/taggy_demux_${i}  -s ${outdir}/taggy_demux/split/${sample}.part_00${i}.fastq --presets=${preset} ${taggy_params} ; done
+    fi
+    mkdir  ${outdir}/taggy_demux/fastq
+    cd ${outdir}/taggy_demux/split/taggy_demux_1/fastq/
+    for i in  *".fastq" ; do cat "${outdir}/taggy_demux/split/taggy_demux_"*"/fastq/$i" > "${outdir}/taggy_demux/fastq/$i" ; done
+    cd ${outdir}
+    for (( i=1; i<=$taggy_split; i++ )); do rm -r ${outdir}/taggy_demux/split/taggy_demux_${i}/fastq  ; done
   else
-    bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/ -s ${outdir}/${sample}.fastq --presets=${preset} ${taggy_params}
+    cd ${ArgenTAG_pipeline}/taggy_demux_3.2.3/taggy_demux-main/
+    if [[ ${preset} == "none" && ${taggy_params} == "none" ]] ; then
+      bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/ -s ${outdir}/${sample}.fastq 
+    elif [[ ${preset} != "none" && ${taggy_params} == "none" ]] ; then
+      bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/ -s ${outdir}/${sample}.fastq --presets=${preset}
+    elif [[ ${preset} == "none" && ${taggy_params} != "none" ]] ; then
+      bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/ -s ${outdir}/${sample}.fastq ${taggy_params}
+    else
+      bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/ -s ${outdir}/${sample}.fastq --presets=${preset} ${taggy_params}
+    fi
   fi
-
   rm ${outdir}/${sample}.fastq
   pigz ${outdir}/taggy_demux/fastq/*fastq
   cat ${outdir}/taggy_demux/fastq/*fastq.gz  > ${outdir}/taggy_demux/fastq/${sample}.taggydemux.fastq.gz
 fi
-
 
 # Stats
 if [[ ${Start_ID} < 3 && ${End_ID} > 1 ]] ; then
@@ -128,7 +152,7 @@ if [[ ${Start_ID} < 3 && ${End_ID} > 1 ]] ; then
   ${Rscript} ${ArgenTAG_pipeline}/SCRIPTS/Stats_v2.R ${yaml}
   
   if [[ ${keep_temp_stats} == FALSE ]] ; then
-    rm -r ${outdir}/Filtering/Stats_tmpe
+    rm -r ${outdir}/Filtering/Stats_tmp
   fi
   
   if [[ ${keep_demux} == FALSE ]] ; then
