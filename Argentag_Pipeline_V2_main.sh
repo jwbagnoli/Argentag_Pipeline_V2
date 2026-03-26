@@ -19,7 +19,7 @@ End_stage=$(grep 'End_stage' ${yaml} | awk '{print $2}')
 
 #taggy:
 preset=$(grep 'preset' ${yaml} | awk '{print $2}')
-taggy_params=$(grep 'taggy_params' ${yaml} | awk '{print $2}')
+taggy_params=$(grep 'taggy_params' ${yaml} | awk '{$1=""; print $0}')
 keep_demux=$(grep 'keep_demux' ${yaml} | awk '{print $2}')
 
 #filtering:
@@ -39,8 +39,6 @@ Rscript=$(grep 'Rscript' ${yaml} | awk '{print $2}')
 ArgenTAG_pipeline=$(grep 'ArgenTAG_pipeline' ${yaml} | awk '{print $2}')
 samtoolsexc=$(grep 'samtoolsexc' ${yaml} | awk '{print $2}')
 minimap2_exc=$(grep 'minimap2_exc' ${yaml} | awk '{print $2}')
-
-
 
 ## Encoding stages
 

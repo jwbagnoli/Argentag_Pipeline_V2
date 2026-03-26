@@ -15,8 +15,8 @@ ym<-read_yaml(yaml_path)
 sample<- ym$sampleinfo$sample
 outdir<- ym$general$outdir
 ncores<- ym$general$nthreads
-gtf_path<-ym$Reference$gtf_path
-fa_path<-ym$Reference$genome_path
+gtf_path<-ym$reference$gtf_path
+fa_path<-ym$reference$genome_path
 
 annotation <- prepareAnnotations(gtf_path)
 

@@ -22,9 +22,9 @@ ym<-read_yaml(yaml_path)
 outdir<- ym$general$outdir
 chunks<- ym$general$nchunks
 ncores<- ym$general$nthreads
-thr.trimlength.mean<-ym$Filtering$minreadlength
-Csel_type<-ym$Filtering$Cellselection
-ncells<-ym$Filtering$ncells
+thr.trimlength.mean<-ym$filtering$minreadlength
+Csel_type<-ym$filtering$Cellselection
+ncells<-ym$filtering$ncells
 
 registerDoParallel(cores=ncores)
 
