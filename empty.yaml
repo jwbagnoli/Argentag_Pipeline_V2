@@ -16,6 +16,7 @@ filtering:
   Cellselection: both #auto, both or ncells
   ncells: 20000
   minreadlength: 400
+  keep_temp_stats: FALSE
 reference:
   genome_name: 
   genome_path: 
