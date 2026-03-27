@@ -71,7 +71,7 @@ fi
 
 ## Checks
 ### Check if input file is fastq or fastq.gz, if not exit
-if [[ ${input_path} != *fastq.gz && ${input_path} != *.fastq ]] ; then
+if [[ ${input_path} != *fastq.gz && ${input_path} != *.fastq && ${input_path} != *.bam ]] ; then
       echo "Please provide a fastq or fastq.gz input file."
       exit 1
 fi
@@ -124,6 +124,7 @@ if [[ ${Start_ID} == 1 ]] ; then
     else
       for (( i=1; i<=$taggy_split; i++ )); do bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/split/taggy_demux_${i}  -s ${outdir}/taggy_demux/split/${sample}.part_00${i}.fastq --presets=${preset} ${taggy_params} ; done
     fi
+    rm ${outdir}/taggy_demux/split/*.fastq
     mkdir  ${outdir}/taggy_demux/fastq
     cd ${outdir}/taggy_demux/split/taggy_demux_1/fastq/
     for i in  *".fastq" ; do cat "${outdir}/taggy_demux/split/taggy_demux_"*"/fastq/$i" > "${outdir}/taggy_demux/fastq/$i" ; done
