@@ -80,7 +80,7 @@ for (i in 1:chunks){
 }
 
 stats<- bind_rows(stats_list2)
-saveRDS(stats, paste0(outdir, "/Filtering/Stats_tmp/perBC_stats.rds"))
+saveRDS(stats, paste0(outdir, "/Filtering/perBC_stats.rds"))
 
 rm(stats_list,stats_list2)
 
