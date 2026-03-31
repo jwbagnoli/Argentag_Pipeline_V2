@@ -124,6 +124,9 @@ if (Csel_type == "auto" | Csel_type =="both"){
 
 ### using custom cell selection
 if (Csel_type == "ncells" | Csel_type =="both"){
+  if (ncells < nrow(readys)){
+    ncells <- nrow(readys)
+  }
   thr.reads_elbow_ncells<-as.numeric(readys$reads[ncells])
   
   elbow_ncells<-ggplot()+
