@@ -92,6 +92,9 @@ readys$index<-as.numeric(rownames(readys))
 ### using automated cell selection
 if (Csel_type == "auto" | Csel_type =="both"){
   thr.index_elbow<-as.numeric(find_curve_elbow(readys[1:50000,c("index", "reads")], plot_curve = FALSE))
+  if (isEmpty(thr.index_elbow)){
+    thr.index_elbow<-nrow(readys)
+  }
   thr.reads_elbow<-as.numeric(readys$reads[thr.index_elbow])
   
   elbow<-ggplot()+
@@ -124,9 +127,10 @@ if (Csel_type == "auto" | Csel_type =="both"){
 
 ### using custom cell selection
 if (Csel_type == "ncells" | Csel_type =="both"){
-  if (ncells < nrow(readys)){
-    ncells <- nrow(readys)
+  if (ncells > nrow(readys)){
+    ncells <- as.numeric(nrow(readys))
   }
+  write.table(ncells, paste0(outdir, "/Filtering/updated_ncells.txt"), quote = F, sep = "\t", row.names = F, col.names = F)
   thr.reads_elbow_ncells<-as.numeric(readys$reads[ncells])
   
   elbow_ncells<-ggplot()+
@@ -344,23 +348,23 @@ foreach(j=1:chunks) %dopar% {
     df <- readRDS(chunk_list2[[j]][k])
     if (Csel_type == "auto" | Csel_type =="both"){
       df_filt <- filter(df, BC_Triplet %in% stats_filt$BC_Triplet)
-      df_filt$ReadID_tagged <- paste0(df_filt$BC_Triplet, "_", df_filt$UMI_seq, "#", df_filt$ReadID)
-      saveRDS(df_filt$ReadID_tagged, paste0(outdir,"/Filtering/Stats_tmp/Chunk_", j, "/File_",file_name,"_filtered_reads_automated.rds"))
+      if (nrow(df_filt) > 0){
+        df_filt$ReadID_tagged <- paste0(df_filt$BC_Triplet, "_", df_filt$UMI_seq, "#", df_filt$ReadID)
+        saveRDS(df_filt$ReadID_tagged, paste0(outdir,"/Filtering/Stats_tmp/Chunk_", j, "/File_",file_name,"_filtered_reads_automated.rds"))
+      }
       rm(df_filt)
     }
-    if (Csel_type == "ncells" | Csel_type =="both"){
-      df_filt_ncells <- filter(df, BC_Triplet %in% stats_filt_ncells$BC_Triplet)
+  if (Csel_type == "ncells" | Csel_type =="both"){
+    df_filt_ncells <- filter(df, BC_Triplet %in% stats_filt_ncells$BC_Triplet)
+    if (nrow(df_filt_ncells) > 0){
       df_filt_ncells$ReadID_tagged <- paste0(df_filt_ncells$BC_Triplet, "_", df_filt_ncells$UMI_seq, "#", df_filt_ncells$ReadID)
       saveRDS(df_filt_ncells$ReadID_tagged, paste0(outdir,"/Filtering/Stats_tmp/Chunk_", j, "/File_",file_name,"_filtered_reads_",ncells ,"cells.rds"))
-      rm(df_filt_ncells)
     }
-    rm(df)
+    rm(df_filt_ncells)
+  }
+  rm(df)
   }
 }
-
-
-
-
 
 
 if (Csel_type == "auto" | Csel_type =="both"){
