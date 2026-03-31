@@ -94,6 +94,7 @@ if (Csel_type == "auto" | Csel_type =="both"){
   thr.index_elbow<-as.numeric(find_curve_elbow(readys[1:50000,c("index", "reads")], plot_curve = FALSE))
   if (isEmpty(thr.index_elbow)){
     thr.index_elbow<-nrow(readys)
+    print("Warning: Could not set elbow. taking all Barcodes above read length threshold for automated BC selection")
   }
   thr.reads_elbow<-as.numeric(readys$reads[thr.index_elbow])
   
@@ -129,6 +130,7 @@ if (Csel_type == "auto" | Csel_type =="both"){
 if (Csel_type == "ncells" | Csel_type =="both"){
   if (ncells > nrow(readys)){
     ncells <- as.numeric(nrow(readys))
+    print("Warning: number of targeted cells higher than number of Barcodes above read length threshold. Taking all above threshold for ncells BC selection")
   }
   write.table(ncells, paste0(outdir, "/Filtering/updated_ncells.txt"), quote = F, sep = "\t", row.names = F, col.names = F)
   thr.reads_elbow_ncells<-as.numeric(readys$reads[ncells])
