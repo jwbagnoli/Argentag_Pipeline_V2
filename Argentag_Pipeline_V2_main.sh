@@ -162,6 +162,7 @@ if [[ ${Start_ID} < 3 && ${End_ID} > 1 ]] ; then
 fi
 
 
+
 # Mapping
 if [[ ${Start_ID} < 4 && ${End_ID} > 2 ]] ; then
   echo "Running Mapping"
@@ -172,11 +173,12 @@ if [[ ${Start_ID} < 4 && ${End_ID} > 2 ]] ; then
 
   mkdir ${outdir}/Mapping/flagstats
   ${samtoolsexc} flagstats -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.bam > ${outdir}/Mapping/flagstats/${sample}.taggydemux.mapped.${genome_name}.flagstats.txt 
-
   ${samtoolsexc} sort -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.bam > ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam
   ${samtoolsexc} index -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam
   rm ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.bam 
 fi
+
+
 
 # Filtering Mapping
 if [[ ${Start_ID} < 5 && ${End_ID} > 3 ]] ; then
@@ -188,6 +190,9 @@ if [[ ${Start_ID} < 5 && ${End_ID} > 3 ]] ; then
   fi
   
   if [[ ${Cellselection} ==  "ncells" || ${Cellselection} ==  "both" ]] ; then
+    echo "${ncells} targeted cells in yaml file"
+    ncells=$(cat  ${outdir}/Filtering/updated_ncells.txt)
+    echo "${ncells} cells will be used for Filtering"
     ${samtoolsexc} view -@ ${nthreads} -b --qname-file ${outdir}/Filtering/Retained_readIDs_"${ncells}"cells.txt ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam  > ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.bam 
     ${samtoolsexc} index -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.bam 
     ${samtoolsexc} flagstats -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.bam  > ${outdir}/Mapping/flagstats/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.flagstats.txt 
@@ -202,6 +207,7 @@ if [[ ${Start_ID} < 6 && ${End_ID} > 4 ]] ; then
   fi
   
   if [[ ${Cellselection} ==  "ncells" || ${Cellselection} ==  "both" ]] ; then
+    ncells=$(cat  ${outdir}/Filtering/updated_ncells.txt)
     echo "Running Bambu for ${ncells} cells selection"
     ${Rscript}  ${ArgenTAG_pipeline}/SCRIPTS/bambu_v2.R ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.bam  ${yaml} "${ncells}cells"
   fi
