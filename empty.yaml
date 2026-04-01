@@ -23,6 +23,8 @@ reference:
   gtf_path: 
   bed_path: 
   splice_size: 
+  gene_keys:
+  species_names:
 tools:
   Rscript: /usr/bin/Rscript
   ArgenTAG_pipeline: /home/TALMAN/Tools/Argentag_Pipeline_V2
