@@ -9,12 +9,15 @@ In either case, the main output of the pipeline is a set of demultiplexed, trimm
 For the customer-facing pipeline, the entire pipeline (except for an optional [chimera splitting step](#chimera-splitting)) is consolidated into a single binary to make it more user friendly. The input is a file of basecalled reads in sam or fastq format, while the output is a set of demultiplexed, trimmed reads in one of the [supported output formats](#output-formats).
 
 ## Usage
-    
+
     Usage: taggy_demux [OPTION...] input-file
     taggy_demux -- a demultiplexer for ArgenTag reads
     
-      -c, --umi-pre=INT          Use INT as UMI pre context. [1]
-      -C, --umi-post=INT         Use INT as UMI post context. [1]
+      -2, --mate-file=FILE       Read mate reads from FILE.
+      -c, --umi-pre=INT          Use INT as UMI pre context. [2]
+      -C, --umi-post=INT         Use INT as UMI post context. [2]
+      -d, --darwin               Output entity list for plotting with the darwin
+                                 analysis tool.
       -D, --max-edit-d=INT/FLOAT Maximum edit distance to consider for linker
                                  alignment (-1 means no limit). If float and < 1,
                                  intepreted as a relative maximum edit dist. If
@@ -27,6 +30,8 @@ For the customer-facing pipeline, the entire pipeline (except for an optional [c
                                  --in-fmt=sam and --out-fmt=sam. [FALSE]
       -k, --keep-failed          Keep failed reads and set nb tag to -1. Only
                                  meaningful if --out-fmt=sam. [FALSE]
+      -m, --min-len=INT          Minimum length to output. [1]
+      -M, --max-len=INT          Maximum length to output. -1 means no limit. [-1]
       -o, --output-dir=DIR       Output directory. [Current directory]
       -O, --orient=STRING        Orientation in which to output reads (one of
                                  "sense", "anti", "preserve" or "invert". [sense]
@@ -35,18 +40,21 @@ For the customer-facing pipeline, the entire pipeline (except for an optional [c
       -P, --preserve             Preserve tags in original sam record. Only
                                  meaningful if --in-fmt=sam and --out-fmt=sam.
                                  [FALSE]
+      -r, --require-TSO          Require TSO to call a read as valid. [FALSE]
       -R, --max-r-bases=INT      Maximum number of bases from read to align (-1
                                  means no limit) [-1]
       -s, --split-chims          Split chimeric reads. [FALSE]
+      -S, --sample=INT           Process only the first INT reads (-1 means no
+                                 limit) [-1]
       -t, --trim-TSO             Trim TSO (if found) from output sequences. [FALSE]
                                 
       -T, --num-threads=INT      Use INT parallel threads [1]
-      -u, --umi-start=INT        Use INT as UMI start coordinate. [25]
-      -U, --umi-end=INT          Use INT as UMI end coordinate. [38]
-      -w, --whitelist=FILE       Barcode whitelist file. [Default]
+      -u, --umi-start=INT        Use INT as UMI start coordinate. [24]
+      -U, --umi-end=INT          Use INT as UMI end coordinate. [39]
+      -w, --whitelist=FILE       Use custom barcode whitelist file.
       -x, --presets=STRING       Presets for sequencing technology (hifi, ont,
-                                 illu) and bead design (v1, v2) Can be combined via
-                                 "+" (e.g. --presets=ont+v1 or -x hifi+v2).
+                                 illu)and bead design (v1, v2). Can be combined via
+                                 "+" (e.g. --presets=ont+v1).
       -?, --help                 Give this help list
           --usage                Give a short usage message
     
@@ -66,7 +74,7 @@ Sequencing platform:
 
     -x hifi / --presets=hifi: equivalent to --in-fmt=sam --out-fmt=sam --max-edit-d=0.1 --orient sense --trim-poly normal --trim-TSO --keep-header --preserve 
     -x ont / --presets=ont: equivalent to --in-fmt=fastq --out-fmt=flames --max-edit-d=0.15 --orient sense --trim-poly lenient --trim-TSO --split-chims
-    -x illu / --presets=illu: equivalent to --in-fmt=fastq --out-fmt=fastq --max-edit-d=0.05 --orient sense --trim-poly strict --trim-TSO
+    -x illu / --presets=illu: equivalent to --in-fmt=paired --out-fmt=paired --max-edit-d=0.05 --orient sense --trim-poly strict --trim-TSO
 
 Multiple presets can be combined via the `+` character (e.g. `--presets=ont+v2`), and individual settings can be overriden by flags appearing *after* the preset (e.g. `--presets=v1+hifi --out-fmt=fastq` will use general settings for PacBio Hi-Fi reads obtained with v1 beads, except the output will be in fastq format rather than sam (which is the default for this preset).
 
