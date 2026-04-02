@@ -114,7 +114,7 @@ if [[ ${Start_ID} == 1 ]] ; then
     mkdir ${outdir}/taggy_demux/split
     seqkit split2 ${outdir}/${sample}.fastq  -p ${taggy_split} -f -O ${outdir}/taggy_demux/split
     for (( i=1; i<=$taggy_split; i++ )); do mkdir ${outdir}/taggy_demux/split/taggy_demux_${i}  ; done
-    cd ${ArgenTAG_pipeline}/taggy_demux_3.2.3/taggy_demux-main/
+    cd ${ArgenTAG_pipeline}/taggy_demux_3.2.5d/taggy_demux-main/
     if [[ ${preset} == "none" && ${taggy_params} == "none" ]] ; then
       for (( i=1; i<=$taggy_split; i++ )); do bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/split/taggy_demux_${i} -s ${outdir}/taggy_demux/split/${sample}.part_00${i}.fastq ; done
     elif [[ ${preset} != "none" && ${taggy_params} == "none" ]] ; then
@@ -131,7 +131,7 @@ if [[ ${Start_ID} == 1 ]] ; then
     cd ${outdir}
     for (( i=1; i<=$taggy_split; i++ )); do rm -r ${outdir}/taggy_demux/split/taggy_demux_${i}/fastq  ; done
   else
-    cd ${ArgenTAG_pipeline}/taggy_demux_3.2.3/taggy_demux-main/
+    cd ${ArgenTAG_pipeline}/taggy_demux_3.2.5d/taggy_demux-main/
     if [[ ${preset} == "none" && ${taggy_params} == "none" ]] ; then
       bin/taggy_demux -T ${nthreads} -o ${outdir}/taggy_demux/ -s ${outdir}/${sample}.fastq 
     elif [[ ${preset} != "none" && ${taggy_params} == "none" ]] ; then
