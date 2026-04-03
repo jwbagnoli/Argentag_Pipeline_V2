@@ -24,7 +24,10 @@ taggy_params=$(grep 'taggy_params' ${yaml} | awk '{$1=""; print $0}')
 keep_demux=$(grep 'keep_demux' ${yaml} | awk '{print $2}')
 
 #filtering:
-Cellselection=$(grep 'Cellselection' ${yaml} | awk '{print $2}')
+#Cellselection=$(grep 'Cellselection' ${yaml} | awk '{print $2}')
+automated_sel=$(grep 'automated_sel' ${yaml} | awk '{print $2}')
+ncells_sel=$(grep 'ncells_sel' ${yaml} | awk '{print $2}')
+custom_sel=$(grep 'custom_sel' ${yaml} | awk '{print $2}')
 ncells=$(grep 'ncells:' ${yaml} | awk '{print $2}')
 keep_temp_stats=$(grep 'keep_temp_stats' ${yaml} | awk '{print $2}')
 
@@ -72,7 +75,7 @@ fi
 ## Checks
 ### Check if input file is fastq or fastq.gz, if not exit
 if [[ ${input_path} != *fastq.gz && ${input_path} != *.fastq && ${input_path} != *.bam ]] ; then
-      echo "Please provide a fastq or fastq.gz input file."
+      echo "Please provide a fastq, fastq.gz or bam input file."
       exit 1
 fi
 
@@ -98,7 +101,7 @@ if [[ ${Start_ID} == 1 ]] ; then
   if [[ ${input_path} == *.gz ]] ; then
     echo "unzipping input file"
     gzip -dkc ${input_path} > ${outdir}/${sample}.fastq
-  elif [[ ${input_path} == *.gz ]] ; then
+  elif [[ ${input_path} == *.fastq ]] ; then
     echo "copying input file"
     cp ${input_path}  ${outdir}/${sample}.fastq
   elif [[ ${input_path} == *.bam ]] ; then
@@ -183,13 +186,13 @@ fi
 # Filtering Mapping
 if [[ ${Start_ID} < 5 && ${End_ID} > 3 ]] ; then
   echo "Running Filtering"
-  if [[ ${Cellselection} ==  "auto" || ${Cellselection} ==  "both" ]] ; then
+  if [[ ${automated_sel} ==  "TRUE" ]] ; then
     ${samtoolsexc} view -@ ${nthreads} -b --qname-file ${outdir}/Filtering/Retained_readIDs_automated.txt ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam  > ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_auto.bam 
     ${samtoolsexc} index -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_auto.bam
     ${samtoolsexc} flagstats -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_auto.bam > ${outdir}/Mapping/flagstats/${sample}.taggydemux.mapped.${genome_name}.filt_auto.flagstats.txt 
   fi
   
-  if [[ ${Cellselection} ==  "ncells" || ${Cellselection} ==  "both" ]] ; then
+  if [[ ${ncells_sel} ==  "TRUE" ]] ; then
     echo "${ncells} targeted cells in yaml file"
     ncells=$(cat  ${outdir}/Filtering/updated_ncells.txt)
     echo "${ncells} cells will be used for Filtering"
@@ -197,19 +200,30 @@ if [[ ${Start_ID} < 5 && ${End_ID} > 3 ]] ; then
     ${samtoolsexc} index -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.bam 
     ${samtoolsexc} flagstats -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.bam  > ${outdir}/Mapping/flagstats/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.flagstats.txt 
   fi
+  
+  if [[ ${custom_sel} ==  "TRUE" ]] ; then
+    ${samtoolsexc} view -@ ${nthreads} -b --qname-file ${outdir}/Filtering/Retained_readIDs_custom.txt ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam  > ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_custom.bam 
+    ${samtoolsexc} index -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_custom.bam
+    ${samtoolsexc} flagstats -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_custom.bam > ${outdir}/Mapping/flagstats/${sample}.taggydemux.mapped.${genome_name}.filt_custom.flagstats.txt 
+  fi
 fi
 
 # Bambu
 if [[ ${Start_ID} < 6 && ${End_ID} > 4 ]] ; then
-  if [[ ${Cellselection} ==  "auto" || ${Cellselection} ==  "both" ]] ; then
+  if [[ ${automated_sel} ==  "TRUE" ]] ; then
     echo "Running Bambu for automated cell selection"
     ${Rscript}  ${ArgenTAG_pipeline}/SCRIPTS/bambu_v2.R ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_auto.bam  ${yaml} automated
   fi
   
-  if [[ ${Cellselection} ==  "ncells" || ${Cellselection} ==  "both" ]] ; then
+  if [[ ${ncells_sel} ==  "TRUE" ]] ; then
     ncells=$(cat  ${outdir}/Filtering/updated_ncells.txt)
     echo "Running Bambu for ${ncells} cells selection"
     ${Rscript}  ${ArgenTAG_pipeline}/SCRIPTS/bambu_v2.R ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.bam  ${yaml} "${ncells}cells"
+  fi
+  
+  if [[ ${automated_sel} ==  "TRUE" ]] ; then
+    echo "Running Bambu for custom cell selection"
+    ${Rscript}  ${ArgenTAG_pipeline}/SCRIPTS/bambu_v2.R ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_custom.bam  ${yaml} custom
   fi
 fi
 

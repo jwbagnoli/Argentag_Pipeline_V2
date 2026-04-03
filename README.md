@@ -13,10 +13,13 @@
   taggy_split: number of seperate taggy_demux runs, numeric 1-9  <br />
   preset: taggy demux preset paramater, e.g. ont+v1 <br />
   keep_demux: TRUE/FALSE keep seperate taggy_demux fastq files <br />
-**filtering:** <br />
-  Cellselection: auto, both or ncells, if auto, ncells parameter will be ignored. <br />
-  ncells: number of target cells, e.g.10000, do not set higher than 30000, can lead to excessive RAM usage during Bambu <br />
-  minreadlength: minimal mean read length for a barcode to be considered, normally 400-600 <br />
+**filtering:** several cell selections can be run. mapping is performed on unfiltered reads.<br />
+  automated_sel: TRUE/FALSE, run automated cell selection, ignores ncells, minreads and minreadlength <br />
+  ncells_sel: TRUE/FALSE, run ncells cell selection, ignores minreads. filters for minreadlength and selects  ncells barcodes with highest number of reads <br />
+  custom_sel: TRUE/FALSE, runs custom cell selection, ignores ncells, selects barcodes >= minreads and >=  minreadlength <br />
+  ncells: number of target cells, e.g.10000, do not set higher than 30000, can lead to excessive RAM usage during Bambu, ignored in automated and custom cell selection <br />
+  minreads: minimal number of reads for a barcode to be considered, normally 400-1000, ignored in automated and ncell cell selection <br />
+  minreadlength: minimal mean read length for a barcode to be considered, normally 400-600, ignored in automated cell selection <br />
   keep_temp_stats: keep temporary stats files <br />
 **reference:** <br />
   genome_name: name of the genome, will be added to mapped files to distiungish them <br />
