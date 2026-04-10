@@ -13,12 +13,9 @@ taggy:
   preset: ont+v1
   keep_demux: TRUE
 filtering:
-  automated_sel: TRUE #logical
-  ncells_sel: TRUE #logical
-  custom_sel: TRUE #logical
-  ncells: 20000 #numeric
-  minreads: 1000 #numeric
-  minreadlength: 400 #numeric
+  Cellselection: both #semi_auto, auto or manual
+  ncells: 20000
+  minreadlength: 400
   keep_temp_stats: FALSE
 reference:
   genome_name: 
