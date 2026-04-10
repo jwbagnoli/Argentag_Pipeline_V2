@@ -221,7 +221,7 @@ if [[ ${Start_ID} < 6 && ${End_ID} > 4 ]] ; then
     ${Rscript}  ${ArgenTAG_pipeline}/SCRIPTS/bambu_v2.R ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.bam  ${yaml} "${ncells}cells"
   fi
   
-  if [[ ${automated_sel} ==  "TRUE" ]] ; then
+  if [[ ${custom_sel} ==  "TRUE" ]] ; then
     echo "Running Bambu for custom cell selection"
     ${Rscript}  ${ArgenTAG_pipeline}/SCRIPTS/bambu_v2.R ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_custom.bam  ${yaml} custom
   fi
