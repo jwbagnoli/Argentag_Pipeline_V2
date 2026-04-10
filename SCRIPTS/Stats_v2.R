@@ -123,7 +123,7 @@ if (isTRUE(automated_sel)){
   
   b<-ggplot()+
     geom_point(data=readys_length, aes(x=index, y=length))+
-    geom_text(aes(x=thr.index_length, y=thr.length, label=paste0(thr.index_length, " bp")), hjust=-0.2)+
+    geom_text(aes(x=thr.index_length, y=thr.length, label=paste0(thr.index_length, " cells")), hjust=-0.2)+
     geom_vline(xintercept = thr.index_length)+             
     theme_bw()+
     ggtitle(paste0(thr.length, " bp"))
