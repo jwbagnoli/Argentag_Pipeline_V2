@@ -6,7 +6,7 @@ yaml_path<- args[1]
 
 
 ### Libs
-library("ShortRead", quietly = T)
+suppressPackageStartupMessages({library("ShortRead", quietly = T)
 library(dplyr, quietly = T)
 library(tidyr, quietly = T)
 library(pathviewr, quietly = T)
@@ -15,7 +15,7 @@ library(ggridges, quietly = T)
 library(cowplot, quietly = T)
 library(yaml, quietly = T)
 library(foreach, quietly = T)
-library(doParallel, quietly = T)
+library(doParallel, quietly = T)})
 
 ym<-read_yaml(yaml_path)
 

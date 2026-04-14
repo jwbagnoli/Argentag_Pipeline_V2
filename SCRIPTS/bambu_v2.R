@@ -6,12 +6,13 @@ yaml_path<-args[2]
 Csel_name<- args[3]
 
 ##### Attention!!!!!!!!!!!!!!!!!! Install bambu via: https://github.com/GoekeLab/bambu/tree/Multiplex_Major_Patch , other version do not work!!!
-library(bambu, quietly = T)
+suppressPackageStartupMessages({library(bambu, quietly = T)
 library(NanoporeRNASeq, quietly = T)
 library(yaml, quietly = T)
 library(GGally, quietly = T)
 library(tidyverse, quietly = T)
-library(viridis)
+library(viridis)})
+  
 ym<-read_yaml(yaml_path)
 
 sample<- ym$sampleinfo$sample
