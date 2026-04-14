@@ -7,6 +7,11 @@
 # Params
 yaml=$1
 
+
+
+
+
+
 #sampleinfo:
 sample=$(grep 'sample:' ${yaml} | awk '{print $2}')
 input_path=$(grep 'input_path' ${yaml} | awk '{print $2}')
@@ -44,6 +49,43 @@ ArgenTAG_pipeline=$(grep 'ArgenTAG_pipeline' ${yaml} | awk '{print $2}')
 samtoolsexc=$(grep 'samtoolsexc' ${yaml} | awk '{print $2}')
 minimap2_exc=$(grep 'minimap2_exc' ${yaml} | awk '{print $2}')
 
+## Checks
+### Check if Rscript is excutable and Argentag pipline and yaml exists
+
+if [ ! -f ${yaml} ]; then
+  echo "Path to yaml file incorrect"
+  exit 1
+fi
+
+if [[ ${yaml} != *.yaml ]] ; then
+      echo "Path to yaml not a yaml file."
+      exit 1
+fi
+
+
+if [ ! -d ${ArgenTAG_pipeline} ]; then
+  echo "Path to ArgenTAG pipeline incorrect"
+  exit 1
+fi
+
+if [ ! -x ${Rscript} ]; then
+  echo "Rscript path is not executable"
+  exit 1
+fi
+
+echo -e "\n....................Checking YAML file....................\n"
+check=$(${Rscript} ${ArgenTAG_pipeline}/SCRIPTS/yaml_check.R ${yaml})
+echo -e ${check}
+
+if [[ ${check} == *"Final outcome..................PASS"* ]]; then
+  echo "Pipeline is starting."
+elif [[ ${check} == *"Final outcome..................FAIL"* ]]; then
+  echo "Pipeline will not start."
+  exit 1
+else 
+ echo "Yaml check not uscessful. Pipeline will not start."
+ exit 1
+fi
 
 ## Encoding stages
 
@@ -70,18 +112,6 @@ elif [[ ${End_stage}  == "filtering" ]] ; then
     End_ID=4
 elif [[ ${End_stage}  == "bambu" ]] ; then
     End_ID=5
-fi
-
-## Checks
-### Check if input file is fastq or fastq.gz, if not exit
-if [[ ${input_path} != *fastq.gz && ${input_path} != *.fastq && ${input_path} != *.bam ]] ; then
-      echo "Please provide a fastq, fastq.gz or bam input file."
-      exit 1
-fi
-
-if [[ ${End_ID} <  ${Start_ID} ]] ; then
-      echo "End stage comes before Start stage, please provide and End Stage which is downstream of the Start stage."
-      exit 1
 fi
 
 
@@ -111,7 +141,7 @@ if [[ ${Start_ID} == 1 ]] ; then
   
   
   # Running taggy demux
-  echo "Running taggy_demux"
+  echo -e "\n....................Running taggy_demux....................\n"
   mkdir ${outdir}/taggy_demux
   if [[ ${taggy_split} > 1 ]] ; then
     mkdir ${outdir}/taggy_demux/split
@@ -152,7 +182,7 @@ fi
 
 # Stats
 if [[ ${Start_ID} < 3 && ${End_ID} > 1 ]] ; then
-  echo "Running Cell Selection"
+  echo "\n....................Running Cell Selection....................\n"
   ${Rscript} ${ArgenTAG_pipeline}/SCRIPTS/Stats_v2.R ${yaml}
   
   if [[ ${keep_temp_stats} == FALSE ]] ; then
@@ -168,7 +198,7 @@ fi
 
 # Mapping
 if [[ ${Start_ID} < 4 && ${End_ID} > 2 ]] ; then
-  echo "Running Mapping"
+  echo -e "\n....................Running Mapping....................\n"
   mkdir ${outdir}/Mapping
   ${minimap2_exc} -t ${nthreads} -ax splice -G ${splice_size} --junc-bed ${bed_path} ${genome_path} ${outdir}/taggy_demux/fastq/${sample}.taggydemux.fastq.gz > ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sam
   ${samtoolsexc} view -@ ${nthreads} -b -S ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sam > ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.bam
@@ -185,7 +215,7 @@ fi
 
 # Filtering Mapping
 if [[ ${Start_ID} < 5 && ${End_ID} > 3 ]] ; then
-  echo "Running Filtering"
+  echo -e "\n....................Running Filtering....................\n"
   if [[ ${automated_sel} ==  "TRUE" ]] ; then
     ${samtoolsexc} view -@ ${nthreads} -b --qname-file ${outdir}/Filtering/Retained_readIDs_automated.txt ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam  > ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_auto.bam 
     ${samtoolsexc} index -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_auto.bam
@@ -211,18 +241,18 @@ fi
 # Bambu
 if [[ ${Start_ID} < 6 && ${End_ID} > 4 ]] ; then
   if [[ ${automated_sel} ==  "TRUE" ]] ; then
-    echo "Running Bambu for automated cell selection"
+    echo -e "\n....................Running Bambu for automated cell selection....................\n"
     ${Rscript}  ${ArgenTAG_pipeline}/SCRIPTS/bambu_v2.R ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_auto.bam  ${yaml} automated
   fi
   
   if [[ ${ncells_sel} ==  "TRUE" ]] ; then
     ncells=$(cat  ${outdir}/Filtering/updated_ncells.txt)
-    echo "Running Bambu for ${ncells} cells selection"
+    echo -e "\n....................Running Bambu for ${ncells} cells selection....................\n"
     ${Rscript}  ${ArgenTAG_pipeline}/SCRIPTS/bambu_v2.R ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.bam  ${yaml} "${ncells}cells"
   fi
   
   if [[ ${custom_sel} ==  "TRUE" ]] ; then
-    echo "Running Bambu for custom cell selection"
+    echo -e "\n....................Running Bambu for custom cell selection....................\n"
     ${Rscript}  ${ArgenTAG_pipeline}/SCRIPTS/bambu_v2.R ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_custom.bam  ${yaml} custom
   fi
 fi
