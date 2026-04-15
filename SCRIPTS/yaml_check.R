@@ -1,16 +1,11 @@
 #!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
 
-
 suppressPackageStartupMessages(library(dplyr, quietly = T, verbose = F))
 
 yaml_path<- args[1]
-#yaml_path<-"/home/TALMAN/Tools/Argentag_Pipeline_V2/test/test_errors.yaml"
 
 ym<-yaml::read_yaml(yaml_path)
-
-
-
 
 FAILS<-c()
 errormsg<-c()
@@ -346,6 +341,3 @@ if (failcounts == 0){
              "\n\n",failcounts, " error(s) found in yaml.\n")
 
 }
-
-
-
