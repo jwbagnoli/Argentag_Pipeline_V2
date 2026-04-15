@@ -15,7 +15,7 @@ library(viridis)})
   
 ym<-read_yaml(yaml_path)
 
-sample<- ym$sampleinfo$sample
+sample<- ym$sampleinfo$sample_name
 outdir<- ym$general$outdir
 ncores<- ym$general$nthreads
 gtf_path<-ym$reference$gtf_path

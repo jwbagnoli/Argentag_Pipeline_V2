@@ -1,0 +1,37 @@
+---
+multi: no 
+sampleinfo:
+  sample_name: MySample
+  input_path: /FULLPATH/MySample.fastq.gz
+general:
+  outdir: /FULLPATH/Out
+  nthreads: 10
+  nchunks: 10
+  Start_stage: taggy #taggy, stats,  mapping, filtering, bambu
+  End_stage: bambu #taggy, stats,  mapping, filtering, bambu
+taggy:
+  taggy_split: 1
+  preset: ont+v1
+  keep_demux: no
+filtering:
+  automated_sel: yes 
+  ncells_sel: no
+  custom_sel: yes
+  ncells: 20000
+  minreads: 1000
+  minreadlength: 500
+  keep_temp_stats: no
+reference:
+  genome_name: MyGenome
+  genome_path: /FULLPATH/MyGenome.fasta
+  gtf_path: /FULLPATH/MyGenome.gtf
+  bed_path: /FULLPATH/MyGenome.bed
+  splice_size: 100000
+  gene_keys: MyKeys
+  species_names: MySpecies
+tools:
+  Rscript: Rscript
+  ArgenTAG_pipeline: /FULLPATH/Argentag_Pipeline_V2
+  samtoolsexc: samtools
+  minimap2_exc: minimap2
+---
