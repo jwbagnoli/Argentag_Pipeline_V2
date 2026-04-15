@@ -17,7 +17,7 @@ errormsg<-c()
 #### sample Infos ----
 
 # Check if sample name is integer
-if (!(is.character(ym$sampleinfo$sample))){
+if (!(is.character(ym$sampleinfo$sample_name))){
   errormsg_tmp<-"sample name is not a character"
   errormsg<-c(errormsg, errormsg_tmp)
   FAILS[1]<-T
@@ -135,7 +135,7 @@ if (!(ym$taggy$preset %in% presets)){
 }
 
 # Check if keep demux is yes/no
-if (!(ym$taggy$keep_demux %in% c("yes", "no"))){
+if (!(is.logical(ym$taggy$keep_demux))){
   errormsg_tmp<-"Keeping demultiplexed files must be yes/no"
   errormsg<-c(errormsg, errormsg_tmp)
   FAILS[11]<-T
@@ -146,7 +146,7 @@ if (!(ym$taggy$keep_demux %in% c("yes", "no"))){
 
 #### filtering ----
 # Check if automated cell selection is yes/no
-if (!(ym$filtering$automated_sel %in% c("yes", "no"))){
+if (!(is.logical(ym$filtering$automated_sel))){
   errormsg_tmp<-"Automated cell selection (automated_sel) must be yes/no"
   errormsg<-c(errormsg, errormsg_tmp)
   FAILS[12]<-T
@@ -155,7 +155,7 @@ if (!(ym$filtering$automated_sel %in% c("yes", "no"))){
 }
 
 # Check if ncells cell selection is yes/no
-if (!(ym$filtering$ncells_sel %in% c("yes", "no"))){
+if (!(is.logical(ym$filtering$ncells_sel))){
   errormsg_tmp<-"Number of cells cell selection (ncells_sel) must be yes/no"
   errormsg<-c(errormsg, errormsg_tmp)
   FAILS[13]<-T
@@ -164,7 +164,7 @@ if (!(ym$filtering$ncells_sel %in% c("yes", "no"))){
 }
 
 # Check if custom cell selection is yes/no
-if (!(ym$filtering$custom_sel %in% c("yes", "no"))){
+if (!(is.logical(ym$filtering$custom_sel))){
   errormsg_tmp<-"Custom cell selection (custom_sel) must be yes/no"
   errormsg<-c(errormsg, errormsg_tmp)
   FAILS[14]<-T
@@ -200,7 +200,7 @@ if (!(is.numeric(ym$filtering$minreadlength))){
 }
 
 # Check if keep temporary stats is yes/no
-if (!(ym$filtering$keep_temp_stats %in% c("yes", "no"))){
+if (!(is.logical(ym$filtering$keep_temp_stats))){
   errormsg_tmp<-"Keeping temporary stats files must be logical must be yes/no"
   errormsg<-c(errormsg, errormsg_tmp)
   FAILS[18]<-T

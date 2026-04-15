@@ -1,5 +1,9 @@
 **Single sample:** <br />
+<<<<<<< HEAD
 Usage: bash Argentag_Pipeline_V2.sh path/singlesample.yaml
+=======
+Usage: bash Argentag_Pipeline_V2.sh path/single.yaml
+>>>>>>> 7faa725278ce442fa681cac37ed5e3c2ba246be4
 
 Make sure to use singlesample.yaml template!!!
 
@@ -44,6 +48,7 @@ Make sure to use singlesample.yaml template!!!
 
 
 *Multiple samples:** <br />
+<<<<<<< HEAD
 Usage: bash Argentag_Pipeline_V2.sh path/multisample.yaml
 
 Make sure to use multisample.yaml template!!! 
@@ -52,6 +57,12 @@ Each parameter is completely independent for each sample making it possible to r
 The sampleinfo section is structure differently as well!
 The sample specific folders and newly created yaml files will be created automatically.
 Example shows 2 samples!
+=======
+Usage: bash Argentag_Pipeline_V2.sh path/multi.yaml
+
+Make sure to use multisample.yaml template!!! Each sample needs to have it's own subsection for filtering and reference sections. the sampleinfo section is structure differently as well!
+Example show 2 samples! 
+>>>>>>> 7faa725278ce442fa681cac37ed5e3c2ba246be4
 
 **yaml paramters:** <br />
 --- <br />
