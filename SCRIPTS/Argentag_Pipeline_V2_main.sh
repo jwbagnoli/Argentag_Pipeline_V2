@@ -13,7 +13,7 @@ yaml=$1
 
 
 #sampleinfo:
-sample=$(grep 'sample:' ${yaml} | awk '{print $2}')
+sample=$(grep 'sample_name:' ${yaml} | awk '{print $2}')
 input_path=$(grep 'input_path' ${yaml} | awk '{print $2}')
 
 #general:
@@ -182,14 +182,14 @@ fi
 
 # Stats
 if [[ ${Start_ID} < 3 && ${End_ID} > 1 ]] ; then
-  echo "\n....................Running Cell Selection....................\n"
+  echo -e "\n....................Running Cell Selection....................\n"
   ${Rscript} ${ArgenTAG_pipeline}/SCRIPTS/Stats_v2.R ${yaml}
   
-  if [[ ${keep_temp_stats} == FALSE ]] ; then
+  if [[ ${keep_temp_stats} == "no" ]] ; then
     rm -r ${outdir}/Filtering/Stats_tmp
   fi
   
-  if [[ ${keep_demux} == FALSE ]] ; then
+  if [[ ${keep_demux} == "no" ]] ; then
     find ${outdir}/taggy_demux/fastq/ -type f -name "[0-9][0-9][0-9][0-9].fastq.gz" -delete
   fi
 fi
@@ -216,13 +216,13 @@ fi
 # Filtering Mapping
 if [[ ${Start_ID} < 5 && ${End_ID} > 3 ]] ; then
   echo -e "\n....................Running Filtering....................\n"
-  if [[ ${automated_sel} ==  "TRUE" ]] ; then
+  if [[ ${automated_sel} ==  "yes" ]] ; then
     ${samtoolsexc} view -@ ${nthreads} -b --qname-file ${outdir}/Filtering/Retained_readIDs_automated.txt ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam  > ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_auto.bam 
     ${samtoolsexc} index -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_auto.bam
     ${samtoolsexc} flagstats -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_auto.bam > ${outdir}/Mapping/flagstats/${sample}.taggydemux.mapped.${genome_name}.filt_auto.flagstats.txt 
   fi
   
-  if [[ ${ncells_sel} ==  "TRUE" ]] ; then
+  if [[ ${ncells_sel} ==  "yes" ]] ; then
     echo "${ncells} targeted cells in yaml file"
     ncells=$(cat  ${outdir}/Filtering/updated_ncells.txt)
     echo "${ncells} cells will be used for Filtering"
@@ -231,7 +231,7 @@ if [[ ${Start_ID} < 5 && ${End_ID} > 3 ]] ; then
     ${samtoolsexc} flagstats -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.bam  > ${outdir}/Mapping/flagstats/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.flagstats.txt 
   fi
   
-  if [[ ${custom_sel} ==  "TRUE" ]] ; then
+  if [[ ${custom_sel} ==  "yes" ]] ; then
     ${samtoolsexc} view -@ ${nthreads} -b --qname-file ${outdir}/Filtering/Retained_readIDs_custom.txt ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam  > ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_custom.bam 
     ${samtoolsexc} index -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_custom.bam
     ${samtoolsexc} flagstats -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_custom.bam > ${outdir}/Mapping/flagstats/${sample}.taggydemux.mapped.${genome_name}.filt_custom.flagstats.txt 
@@ -240,18 +240,18 @@ fi
 
 # Bambu
 if [[ ${Start_ID} < 6 && ${End_ID} > 4 ]] ; then
-  if [[ ${automated_sel} ==  "TRUE" ]] ; then
+  if [[ ${automated_sel} ==  "yes" ]] ; then
     echo -e "\n....................Running Bambu for automated cell selection....................\n"
     ${Rscript}  ${ArgenTAG_pipeline}/SCRIPTS/bambu_v2.R ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_auto.bam  ${yaml} automated
   fi
   
-  if [[ ${ncells_sel} ==  "TRUE" ]] ; then
+  if [[ ${ncells_sel} ==  "yes" ]] ; then
     ncells=$(cat  ${outdir}/Filtering/updated_ncells.txt)
     echo -e "\n....................Running Bambu for ${ncells} cells selection....................\n"
     ${Rscript}  ${ArgenTAG_pipeline}/SCRIPTS/bambu_v2.R ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.bam  ${yaml} "${ncells}cells"
   fi
   
-  if [[ ${custom_sel} ==  "TRUE" ]] ; then
+  if [[ ${custom_sel} ==  "yes" ]] ; then
     echo -e "\n....................Running Bambu for custom cell selection....................\n"
     ${Rscript}  ${ArgenTAG_pipeline}/SCRIPTS/bambu_v2.R ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_custom.bam  ${yaml} custom
   fi

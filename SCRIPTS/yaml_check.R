@@ -134,9 +134,9 @@ if (!(ym$taggy$preset %in% presets)){
   FAILS[10]<-F
 }
 
-# Check if keep demux is logical
-if (!(is.logical(ym$taggy$keep_demux))){
-  errormsg_tmp<-"Keeping demultiplexed files must be logical (TRUE/FALSE)"
+# Check if keep demux is yes/no
+if (!(ym$taggy$keep_demux %in% c("yes", "no"))){
+  errormsg_tmp<-"Keeping demultiplexed files must be yes/no"
   errormsg<-c(errormsg, errormsg_tmp)
   FAILS[11]<-T
 }else{
@@ -145,27 +145,27 @@ if (!(is.logical(ym$taggy$keep_demux))){
 
 
 #### filtering ----
-# Check if automated cell selection is logical
-if (!(is.logical(ym$filtering$automated_sel))){
-  errormsg_tmp<-"Automated cell selection (automated_sel) must be logical (TRUE/FALSE)"
+# Check if automated cell selection is yes/no
+if (!(ym$filtering$automated_sel %in% c("yes", "no"))){
+  errormsg_tmp<-"Automated cell selection (automated_sel) must be yes/no"
   errormsg<-c(errormsg, errormsg_tmp)
   FAILS[12]<-T
 }else{
   FAILS[12]<-F
 }
 
-# Check if ncells cell selection is logical
-if (!(is.logical(ym$filtering$ncells_sel))){
-  errormsg_tmp<-"Number of cells cell selection (ncells_sel) must be logical (TRUE/FALSE)"
+# Check if ncells cell selection is yes/no
+if (!(ym$filtering$ncells_sel %in% c("yes", "no"))){
+  errormsg_tmp<-"Number of cells cell selection (ncells_sel) must be yes/no"
   errormsg<-c(errormsg, errormsg_tmp)
   FAILS[13]<-T
 }else{
   FAILS[13]<-F
 }
 
-# Check if custom cell selection is logical
-if (!(is.logical(ym$filtering$custom_sel))){
-  errormsg_tmp<-"Custom cell selection (custom_sel) must be logical (TRUE/FALSE)"
+# Check if custom cell selection is yes/no
+if (!(ym$filtering$custom_sel %in% c("yes", "no"))){
+  errormsg_tmp<-"Custom cell selection (custom_sel) must be yes/no"
   errormsg<-c(errormsg, errormsg_tmp)
   FAILS[14]<-T
 }else{
@@ -199,9 +199,9 @@ if (!(is.numeric(ym$filtering$minreadlength))){
   FAILS[17]<-F
 }
 
-# Check if keep temporary stats is logical
-if (!(is.logical(ym$filtering$keep_temp_stats))){
-  errormsg_tmp<-"Keeping temporary stats files must be logical must be logical (TRUE/FALSE)"
+# Check if keep temporary stats is yes/no
+if (!(ym$filtering$keep_temp_stats %in% c("yes", "no"))){
+  errormsg_tmp<-"Keeping temporary stats files must be logical must be yes/no"
   errormsg<-c(errormsg, errormsg_tmp)
   FAILS[18]<-T
 }else{
