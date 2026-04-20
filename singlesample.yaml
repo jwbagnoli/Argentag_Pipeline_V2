@@ -27,6 +27,8 @@ reference:
   gtf_path: /FULLPATH/MyGenome.gtf
   bed_path: /FULLPATH/MyGenome.bed
   splice_size: 100000
+  secondarymap: yes
+  num_align: 5
   gene_keys: MyKeys
   species_names: MySpecies
 tools:

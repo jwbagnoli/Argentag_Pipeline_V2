@@ -249,31 +249,49 @@ if (!(is.numeric(ym$reference$splice_size))){
   FAILS[23]<-F
 }
 
-# Check if gene keys is character
-if (!(is.character(ym$reference$gene_keys))){
-  errormsg_tmp<-"gene keys are not charcter"
+# Check if secondarymap is yes/no
+if (!(is.logical(ym$reference$secondarymap))){
+  errormsg_tmp<-"secondarymap must be yes/no"
   errormsg<-c(errormsg, errormsg_tmp)
   FAILS[24]<-T
 }else{
   FAILS[24]<-F
 }
 
-# Check if species name is character
-if (!(is.character(ym$reference$species_names))){
-  errormsg_tmp<-"species names are not a character"
+# Check if number alignments is numerical
+if (!(is.numeric(ym$reference$num_align))){
+  errormsg_tmp<-"Number of secondary alignements must be numeric"
   errormsg<-c(errormsg, errormsg_tmp)
   FAILS[25]<-T
 }else{
   FAILS[25]<-F
 }
 
-# Check if species name and gene keys are the same size
-if (!(length(ym$reference$species_names) == length(ym$reference$gene_keys))){
-  errormsg_tmp<-"species names and gene keys are not the same length"
+# Check if gene keys is character
+if (!(is.character(ym$reference$gene_keys))){
+  errormsg_tmp<-"gene keys are not charcter"
   errormsg<-c(errormsg, errormsg_tmp)
   FAILS[26]<-T
 }else{
   FAILS[26]<-F
+}
+
+# Check if species name is character
+if (!(is.character(ym$reference$species_names))){
+  errormsg_tmp<-"species names are not a character"
+  errormsg<-c(errormsg, errormsg_tmp)
+  FAILS[27]<-T
+}else{
+  FAILS[27]<-F
+}
+
+# Check if species name and gene keys are the same size
+if (!(length(ym$reference$species_names) == length(ym$reference$gene_keys))){
+  errormsg_tmp<-"species names and gene keys are not the same length"
+  errormsg<-c(errormsg, errormsg_tmp)
+  FAILS[28]<-T
+}else{
+  FAILS[28]<-F
 }
 
 #### Tools ----
@@ -286,36 +304,36 @@ is_bin_on_path = function(bin) {
 if (!(file.exists(ym$tools$Rscript)) & !(is_bin_on_path(ym$tools$Rscript))){
   errormsg_tmp<-"Rscript not found"
   errormsg<-c(errormsg, errormsg_tmp)
-  FAILS[27]<-T
+  FAILS[29]<-T
 }else{
-  FAILS[27]<-F
+  FAILS[29]<-F
 }
 
 # Check if Argentag piepline exists
 if (!(file.exists(ym$tools$ArgenTAG_pipeline))){
   errormsg_tmp<-"ArgenTAG pipeline not found"
   errormsg<-c(errormsg, errormsg_tmp)
-  FAILS[28]<-T
+  FAILS[30]<-T
 }else{
-  FAILS[28]<-F
+  FAILS[30]<-F
 }
 
 # Check if samtools exists
 if (!(file.exists(ym$tools$samtoolsexc)) & !(is_bin_on_path(ym$tools$samtoolsexc))){
   errormsg_tmp<-"samtools not found"
   errormsg<-c(errormsg, errormsg_tmp)
-  FAILS[29]<-T
+  FAILS[31]<-T
 }else{
-  FAILS[29]<-F
+  FAILS[31]<-F
 }
 
 # Check if minimap2 exists
 if (!(file.exists(ym$tools$minimap2_exc)) & !(is_bin_on_path(ym$tools$minimap2_exc))){
   errormsg_tmp<-"minimap2 not found"
   errormsg<-c(errormsg, errormsg_tmp)
-  FAILS[30]<-T
+  FAILS[32]<-T
 }else{
-  FAILS[30]<-F
+  FAILS[32]<-F
 }
 
 #### Final count ----

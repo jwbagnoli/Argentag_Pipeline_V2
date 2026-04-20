@@ -42,12 +42,23 @@ genome_path=$(grep 'genome_path' ${yaml} | awk '{print $2}')
 gtf_path=$(grep 'gtf_path' ${yaml} | awk '{print $2}')
 bed_path=$(grep 'bed_path' ${yaml} | awk '{print $2}')
 splice_size=$(grep 'splice_size:' ${yaml} | awk '{print $2}')
+secondarymap=$(grep 'secondarymap:' ${yaml} | awk '{print $2}')
+num_align=$(grep 'num_align:' ${yaml} | awk '{print $2}')
 
+# # tagging:
+# tag_bams=$(grep 'tag_bams' ${yaml} | awk '{print $2}')
+# Barcode_TAG=$(grep 'Barcode_TAG' ${yaml} | awk '{print $2}')
+# UMI_TAG=$(grep 'UMI_TAG' ${yaml} | awk '{print $2}')
+# flames_readname=$(grep 'flames_readname' ${yaml} | awk '{print $2}')
+# replace_nonTagged=$(grep 'replace_nonTagged' ${yaml} | awk '{print $2}')
+
+  
 #tools
 Rscript=$(grep 'Rscript' ${yaml} | awk '{print $2}')
 ArgenTAG_pipeline=$(grep 'ArgenTAG_pipeline' ${yaml} | awk '{print $2}')
 samtoolsexc=$(grep 'samtoolsexc' ${yaml} | awk '{print $2}')
 minimap2_exc=$(grep 'minimap2_exc' ${yaml} | awk '{print $2}')
+# jvarkit=$(grep 'jvarkit' ${yaml} | awk '{print $2}')
 
 ## Checks
 ### Check if Rscript is excutable and Argentag pipline and yaml exists
@@ -200,7 +211,7 @@ fi
 if [[ ${Start_ID} < 4 && ${End_ID} > 2 ]] ; then
   echo -e "\n....................Running Mapping....................\n"
   mkdir ${outdir}/Mapping
-  ${minimap2_exc} -t ${nthreads} -ax splice -G ${splice_size} --junc-bed ${bed_path} ${genome_path} ${outdir}/taggy_demux/fastq/${sample}.taggydemux.fastq.gz > ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sam
+  ${minimap2_exc} -t ${nthreads} -ax splice -G ${splice_size} --secondary ${secondarymap} -N ${num_align} --junc-bed ${bed_path} ${genome_path} ${outdir}/taggy_demux/fastq/${sample}.taggydemux.fastq.gz > ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sam
   ${samtoolsexc} view -@ ${nthreads} -b -S ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sam > ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.bam
   rm ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sam
 
@@ -256,6 +267,29 @@ if [[ ${Start_ID} < 6 && ${End_ID} > 4 ]] ; then
     ${Rscript}  ${ArgenTAG_pipeline}/SCRIPTS/bambu_v2.R ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_custom.bam  ${yaml} custom
   fi
 fi
+
+# Tagging bam files
+# if [[ ${tag_bams} == "yes" ]] ; then
+#   echo -e "\n....................Tagging bam files....................\n"
+#   if [[ ${flames_readname} == "no" ]] ; then
+#     tag_command='String s=record.getReadName(); int h=s.indexOf("#"),u=s.indexOf("_");record.setReadName(s.substring(h+1));record.setAttribute("${Barcode_TAG}",s.substring(0,u));record.setAttribute("{UMI_TAG}",s.substring(u+1,h));return record;'
+#   else
+#     tag_command='String s=record.getReadName(); int h=s.indexOf("#"),u=s.indexOf("_");record.setAttribute("${Barcode_TAG}",s.substring(0,u));record.setAttribute("{UMI_TAG}",s.substring(u+1,h));return record;'
+#   fi
+#   echo ${tag_command}
+#   java -jar ${jvarkit} samjdk -o ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.tagged.bam -e '${tag_command}' ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam
+# 
+#   if [[ ${automated_sel} ==  "yes" ]] ; then
+#    java -jar ${jvarkit} samjdk -o ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_auto.tagged.bam -e ${tag_command} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_auto.bam
+#   fi
+#   if [[ ${ncells_sel} ==  "yes" ]] ; then
+#    java -jar ${jvarkit} samjdk -o ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.tagged.bam -e ${tag_command} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_"${ncells}"cells.bam
+#   fi
+#   if [[ ${custom_sel} ==  "yes" ]] ; then
+#    java -jar ${jvarkit} samjdk -o ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_custom.bam -e ${tag_command} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.filt_custom.bam
+#   fi
+# fi
+
 
 # END
 echo "DONE"

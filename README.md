@@ -34,6 +34,8 @@ Make sure to use singlesample.yaml template!!!
   gtf_path: path to genome gtf file  <br />
   bed_path: path to genome bed file for minimap <br />
   splice_size: minimap maximum splice size <br />
+  secondarymap: numeric, number of secondary alignements <br />
+  num_align: 1
   gene_keys: Identifying character for genes of species, e.g. ENSG for human, if several genomes were used seperate by , e.g. ENGS, ENSMUS <br />
   species_names: names of species, e.g.  human, if several genomes were used seperate by , e.g. human , mouse <br /> <br />
 **tools:** paths for tools used <br />
@@ -96,6 +98,8 @@ Example shows 2 samples!
     gtf_path: path to genome gtf file  <br />
     bed_path: path to genome bed file for minimap <br />
     splice_size: minimap maximum splice size <br />
+    splice_size: minimap maximum splice size <br />
+    secondarymap: numeric, number of secondary alignements <br />
     gene_keys: Identifying character for genes of species, e.g. ENSG for human, if several genomes were used seperate by , e.g. ENGS, ENSMUS <br />
     species_names: names of species, e.g.  human, if several genomes were used seperate by , e.g. human , mouse <br /> <br />
   mysample2: <br />
@@ -104,6 +108,8 @@ Example shows 2 samples!
     gtf_path: path to genome gtf file  <br />
     bed_path: path to genome bed file for minimap <br />
     splice_size: minimap maximum splice size <br />
+    splice_size: minimap maximum splice size <br />
+    secondarymap: numeric, number of secondary alignements <br />
     gene_keys: Identifying character for genes of species, e.g. ENSG for human, if several genomes were used seperate by , e.g. ENGS, ENSMUS <br />
     species_names: names of species, e.g.  human, if several genomes were used seperate by , e.g. human , mouse <br /> <br />
 **tools:** paths for tools used <br />

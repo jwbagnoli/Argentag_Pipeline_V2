@@ -70,6 +70,10 @@ split_counts_genes<- function(counts, patterns, names){
 
 counts_list<-split_counts_genes(counts = counts, patterns =gene_keys, names = species_names )
 
+for (i in 1:length(counts_list)){
+  saveRDS(counts_list[[i]], paste0(outdir,  "/Bambu_",Csel_name, "/", sample,"_counts_", Csel_name,"_",names(counts_list)[i],".rds" ))
+}
+
 #### Create QC
 qc_list<-list()
 for (i in 1: length(counts_list)){
