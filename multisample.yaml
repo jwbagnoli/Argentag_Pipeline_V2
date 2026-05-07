@@ -1,5 +1,5 @@
 ---
-multisample: yes
+multi: yes
 sampleinfo:
   MySample1: /FULLPATH/MySample1.fastq.gz
   MySample2: /FULLPATH/MySample2.fastq.gz
