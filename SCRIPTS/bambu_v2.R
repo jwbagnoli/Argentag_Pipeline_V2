@@ -131,8 +131,8 @@ ggsave(plot=qc,
 ### Correlation plots
 qc_df_gene_wide<- qc_df[, c("BC","Species", "Genes")] %>% pivot_wider(names_from = Species, values_from = Genes) %>% column_to_rownames(var = "BC")
 qc_df_UMI_wide<- qc_df[, c("BC","Species", "UMIs")] %>% pivot_wider(names_from = Species, values_from = UMIs) %>% column_to_rownames(var = "BC")
-pm_genes <- ggpairs(qc_df_gene_wide)+theme_bw()+ggtitle("nGenes")
-pm_UMIs <- ggpairs(qc_df_UMI_wide)+theme_bw()+ggtitle("nUMIs")
+pm_genes <- ggpairs(qc_df_gene_wide, title = "nGenes")+theme_bw()
+pm_UMIs <- ggpairs(qc_df_UMI_wide, title = "nUMIs")+theme_bw()
 
 
 ggsave(plot=pm_genes, 
