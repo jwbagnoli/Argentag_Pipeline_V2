@@ -50,6 +50,10 @@ reference:
     num_align: 5
     gene_keys: MyKeys
     species_names: MySpecies
+tagging:
+  tag_bams: no
+  Barcode_TAG: CB
+  UMI_TAG: UB
 tools:
   Rscript: Rscript
   ArgenTAG_pipeline: /FULLPATH/Argentag_Pipeline_V2

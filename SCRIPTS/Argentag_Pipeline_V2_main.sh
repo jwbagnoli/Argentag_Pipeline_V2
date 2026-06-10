@@ -46,11 +46,10 @@ secondarymap=$(grep 'secondarymap:' ${yaml} | awk '{print $2}')
 num_align=$(grep 'num_align:' ${yaml} | awk '{print $2}')
 
 # # tagging:
-# tag_bams=$(grep 'tag_bams' ${yaml} | awk '{print $2}')
-# Barcode_TAG=$(grep 'Barcode_TAG' ${yaml} | awk '{print $2}')
-# UMI_TAG=$(grep 'UMI_TAG' ${yaml} | awk '{print $2}')
-# flames_readname=$(grep 'flames_readname' ${yaml} | awk '{print $2}')
-# replace_nonTagged=$(grep 'replace_nonTagged' ${yaml} | awk '{print $2}')
+tag_bams=$(grep 'tag_bams' ${yaml} | awk '{print $2}')
+Barcode_TAG=$(grep 'Barcode_TAG' ${yaml} | awk '{print $2}')
+UMI_TAG=$(grep 'UMI_TAG' ${yaml} | awk '{print $2}')
+
 
   
 #tools
@@ -220,6 +219,13 @@ if [[ ${Start_ID} < 4 && ${End_ID} > 2 ]] ; then
   ${samtoolsexc} sort -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.bam > ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam
   ${samtoolsexc} index -@ ${nthreads} ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam
   rm ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.bam 
+  
+  if [[ ${tag_bams} ==  "yes"  ]] ; then
+    echo -e "\n....................tagging mapped bam file....................\n"
+    bash ${ArgenTAG_pipeline}/SCRIPTS/tag_bam.sh ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.tagged.bam ${Barcode_TAG} ${UMI_TAG}
+    rm ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam
+    mv ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.tagged.bam ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam
+  fi
 fi
 
 

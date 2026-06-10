@@ -336,6 +336,32 @@ if (!(file.exists(ym$tools$minimap2_exc)) & !(is_bin_on_path(ym$tools$minimap2_e
   FAILS[32]<-F
 }
 
+## Check tagging
+# Check if keep demux is yes/no
+if (!(is.logical(ym$tagging$tag_bams))){
+  errormsg_tmp<-"tag_bams must be yes/no"
+  errormsg<-c(errormsg, errormsg_tmp)
+  FAILS[33]<-T
+}else{
+  FAILS[33]<-F
+}
+
+if (!(is.character(ym$tagging$Barcode_TAG))){
+  errormsg_tmp<-"Barcode TAG is not character"
+  errormsg<-c(errormsg, errormsg_tmp)
+  FAILS[34]<-T
+}else{
+  FAILS[34]<-F
+}
+
+if (!(is.character(ym$tagging$UMI_TAG))){
+  errormsg_tmp<-"UMI TAG is not charcter"
+  errormsg<-c(errormsg, errormsg_tmp)
+  FAILS[35]<-T
+}else{
+  FAILS[35]<-F
+}
+
 #### Final count ----
 failcounts<-sum(FAILS)
 

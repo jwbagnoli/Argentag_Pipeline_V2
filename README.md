@@ -38,6 +38,10 @@ Make sure to use singlesample.yaml template!!!
   num_align: 1
   gene_keys: Identifying character for genes of species, e.g. ENSG for human, if several genomes were used seperate by , e.g. ENGS, ENSMUS <br />
   species_names: names of species, e.g.  human, if several genomes were used seperate by , e.g. human , mouse <br /> <br />
+**tagging:** options to tag the mapped bam file. Only necessary if downstream applications require Barcode/UMI tagged bam file. <br />
+  tag_bams: yes/no perform tagging of bam files. generally not required. <br />
+  Barcode_TAG: character, name of the Barcode Tag, e.g. CB. do not use special characters! <br />
+  UMI_TAG: character, name of the UMI Tag, e.g. UB. do not use special characters! <br />
 **tools:** paths for tools used <br />
   Rscript: Rscript <br />
   ArgenTAG_pipeline: /home/Argentag_Pipeline_V2 <br />
@@ -112,6 +116,10 @@ Example shows 2 samples!
     secondarymap: numeric, number of secondary alignements <br />
     gene_keys: Identifying character for genes of species, e.g. ENSG for human, if several genomes were used seperate by , e.g. ENGS, ENSMUS <br />
     species_names: names of species, e.g.  human, if several genomes were used seperate by , e.g. human , mouse <br /> <br />
+**tagging:** options to tag the mapped bam file. Only necessary if downstream applications require Barcode/UMI tagged bam file. <br />
+  tag_bams: yes/no perform tagging of bam files. generally not required. <br />
+  Barcode_TAG: character, name of the Barcode Tag, e.g. CB. do not use special characters! <br />
+  UMI_TAG: character, name of the UMI Tag, e.g. UB. do not use special characters! <br />
 **tools:** paths for tools used <br />
   Rscript: Rscript <br />
   ArgenTAG_pipeline: /home/Argentag_Pipeline_V2 <br />
