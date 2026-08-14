@@ -46,6 +46,8 @@ print(".....Creating count matrices")
 quantData.gene <- transcriptToGeneExpression(se)
 counts <- assays(quantData.gene)$counts #selecting first sample
 
+colnames(counts)<-paste0(sample, ".",stringr::str_extract(string =colnames(counts), pattern = "\\d{4}-\\d{4}-\\d{4}" ))
+
 saveRDS(counts, paste0(outdir, "/Bambu_",Csel_name, "/", sample,"_",ym$reference$genome_name, "_counts_", Csel_name,".rds"))
 
 # Create gene stats
