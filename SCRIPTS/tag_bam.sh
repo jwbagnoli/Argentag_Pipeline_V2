@@ -4,8 +4,9 @@ input=$1
 output=$2
 bc_tag=$3
 umi_tag=$4
+threads=$5
 
-samtools view -@ 6 -h ${input} | \
+samtools view -@ ${threads}  -h ${input} | \
 mawk -v bc_tag=${bc_tag} -v umi_tag=${umi_tag} '
 BEGIN { OFS="\t" }
 {
@@ -26,7 +27,7 @@ BEGIN { OFS="\t" }
         }
     }
 }' | \
-samtools view -@ 6 -b -o ${output}
+samtools view -@ ${threads} -b -o ${output}
 
 
 

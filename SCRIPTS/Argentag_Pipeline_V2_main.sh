@@ -222,7 +222,7 @@ if [[ ${Start_ID} < 4 && ${End_ID} > 2 ]] ; then
   
   if [[ ${tag_bams} ==  "yes"  ]] ; then
     echo -e "\n....................tagging mapped bam file....................\n"
-    bash ${ArgenTAG_pipeline}/SCRIPTS/tag_bam.sh ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.tagged.bam ${Barcode_TAG} ${UMI_TAG}
+    bash ${ArgenTAG_pipeline}/SCRIPTS/tag_bam.sh ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.tagged.bam ${Barcode_TAG} ${UMI_TAG} ${nthreads}
     rm ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam
     mv ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.tagged.bam ${outdir}/Mapping/${sample}.taggydemux.mapped.${genome_name}.sorted.bam
   fi
